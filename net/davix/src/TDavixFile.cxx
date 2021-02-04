@@ -415,7 +415,18 @@ void TDavixFileInternal::parseConfig()
    davixParam->setSSLCAcheck(ca_check_local);
    if (gDebug > 0)
       Info("parseConfig", "Setting CAcheck to %s", ((ca_check_local) ? ("true") : ("false")));
-
+   
+   std::string prefix = "Bearer ";
+   // setup Bearer token auth
+   env_var = gEnv->GetValue("Davix.HTTP.Token", getenv("HTTP_TOKEN"));
+      if (gDebug > 0)
+         Info("parseConfig", "Using Bearer TOKEN: %s", env_var);
+   if (env_var) {
+      davixParam->addHeader("Authorization", prefix + env_var);
+      if (gDebug > 0)
+         Info("parseConfig", "Using HTTP Bearer TOKEN: %s", env_var);
+   }
+   
    // S3 Auth
    if (((env_var = gEnv->GetValue("Davix.S3.SecretKey", getenv("S3_SECRET_KEY"))) != NULL)
          && ((env_var2 = gEnv->GetValue("Davix.S3.AccessKey", getenv("S3_ACCESS_KEY"))) != NULL)) {
